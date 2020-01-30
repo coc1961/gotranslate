@@ -95,6 +95,7 @@ func (t *translate) visit(path string, f os.FileInfo, err1 error) error {
 
 	if fo, err := os.Create(pt); err == nil {
 		printer.Fprint(fo, fset, node)
+		defer fo.Close()
 	} else {
 		return err
 	}
