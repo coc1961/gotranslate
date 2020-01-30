@@ -9,8 +9,8 @@ import (
 )
 
 func main() {
-	language := flag.String("l", "en", "language default (en)")
-	sourceLanguage := flag.String("s", "es", "source language default (es)")
+	language := flag.String("l", "en", "translate language, default (en)")
+	sourceLanguage := flag.String("s", "es", "source language, default (es)")
 	inputSource := flag.String("i", "", "input source dir")
 	outputSource := flag.String("o", "", "output source dir")
 	flag.Parse()
