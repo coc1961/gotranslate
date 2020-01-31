@@ -4,6 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"reflect"
+	"strings"
 
 	"github.com/coc1961/gotranslate/internal/translate"
 )
@@ -117,17 +119,14 @@ Valid Language:
 	Zulu		zu`
 
 func main() {
-	language := flag.String("l", "en", "language to translate, default (en)")
-	sourceLanguage := flag.String("s", "es", "actual source code comments language, default (es)")
 	inputSource := flag.String("i", "", "input source dir")
 	outputSource := flag.String("o", "", "output source dir")
+	sourceLanguage := flag.String("s", "es", "actual source code comments language")
+	language := flag.String("l", "en", "language to translate")
 	flag.Parse()
 
 	if *inputSource == "" || *outputSource == "" {
-		fmt.Println(validLanguage)
-		fmt.Println("\n\nTranslate the source code comments of go project to the specified language\n\n ")
-		fmt.Println("input and output source dir are mandatory")
-		flag.PrintDefaults()
+		help()
 		os.Exit(1)
 	}
 	translate, err := translate.New(*language, *sourceLanguage, *inputSource, *outputSource)
@@ -141,4 +140,57 @@ func main() {
 		os.Exit(1)
 	}
 
+}
+
+type stringValue string
+
+func (s *stringValue) Set(val string) error {
+	*s = stringValue(val)
+	return nil
+}
+
+func (s *stringValue) Get() interface{} { return string(*s) }
+
+func (s *stringValue) String() string { return string(*s) }
+
+func help() {
+	fmt.Println(validLanguage)
+	fmt.Println("\n\nTranslate the source code comments of go project to the specified language\n\n ")
+	fmt.Println("input and output source dir are mandatory")
+
+	arr := make([]*flag.Flag, 0)
+	arr = append(arr, flag.Lookup("i"))
+	arr = append(arr, flag.Lookup("o"))
+	arr = append(arr, flag.Lookup("s"))
+	arr = append(arr, flag.Lookup("l"))
+
+	for _, f := range arr {
+		s := fmt.Sprintf("  -%s", f.Name) // Two spaces before -; see next two comments.
+		s += "\t"
+
+		_, usage := flag.UnquoteUsage(f)
+
+		s += strings.ReplaceAll(usage, "\n", "\n    \t")
+
+		if !isZeroValue(f, f.DefValue) {
+			if _, ok := f.Value.(*stringValue); ok {
+				// put quotes on the value
+				s += fmt.Sprintf(" (default %q)", f.DefValue)
+			} else {
+				s += fmt.Sprintf(" (default %v)", f.DefValue)
+			}
+		}
+		fmt.Fprint(flag.CommandLine.Output(), s, "\n")
+	}
+}
+
+func isZeroValue(f *flag.Flag, value string) bool {
+	typ := reflect.TypeOf(f.Value)
+	var z reflect.Value
+	if typ.Kind() == reflect.Ptr {
+		z = reflect.New(typ.Elem())
+	} else {
+		z = reflect.Zero(typ)
+	}
+	return value == z.Interface().(flag.Value).String()
 }

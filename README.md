@@ -126,12 +126,12 @@ Translate the source code comments of go project to the specified language
 input and output source dir are mandatory
   -i string
         input source dir
-  -l string
-        language to translate, default (en) (default "en")
   -o string
         output source dir
   -s string
         actual source code comments language, default (es) (default "es")
+  -l string
+        language to translate, default (en) (default "en")
 ``` 
 
 ## Example
