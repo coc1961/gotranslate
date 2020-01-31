@@ -60,7 +60,6 @@ func (s source) save() error {
 		if len(arr)-1 == len(s.comment) {
 			for i := 0; i < len(s.comment); i++ {
 				s.comment[i].Text = strings.ReplaceAll(strings.ReplaceAll(arr[i], "* /", "*/"), "/ *", "/*")
-				//fmt.Println(s.comment[i].Text, "===", arr[i])
 			}
 		}
 	}
