@@ -133,3 +133,15 @@ input and output source dir are mandatory
   -s string
         actual source code comments language, default (es) (default "es")
 ``` 
+
+## Example
+
+> This example translates the source code with comments in English (-s en) to Japanese (-l ja).
+> source code of the project in /home/user/go/src/github.com/testproject 
+> and save the result in /tmp/testproyect
+
+```sh
+
+gotranslate -i /home/user/go/src/github.com/testproject -o /tmp/testproyect -s en -l ja
+
+```
