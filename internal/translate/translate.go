@@ -21,6 +21,10 @@ type Translate interface {
 
 func New(language, sourceLanguage, inPath, outPath string) (Translate, error) {
 
+	if x, err := filepath.Abs(inPath); err == nil {
+		inPath = x
+	}
+
 	return (&translate{
 		language:       language,
 		sourceLanguage: sourceLanguage,
@@ -94,6 +98,7 @@ func (t *translate) validate() (*translate, error) {
 func (t *translate) Translate() error {
 	t.files = make([]source, 0)
 	var err error
+
 	if err = filepath.Walk(t.inPath, t.visit); err != nil {
 		return err
 	}
@@ -139,7 +144,14 @@ func (t *translate) visit(path string, f os.FileInfo, err1 error) error {
 	}
 
 	if len(src.comment) > 0 {
-		pt := filepath.Join(t.outPath, path)
+
+		tmp, err := filepath.Rel(t.inPath, path)
+
+		if err != nil {
+			return nil
+		}
+
+		pt := filepath.Join(t.outPath, tmp)
 
 		src.t = t
 		src.path = pt
