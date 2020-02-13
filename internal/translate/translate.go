@@ -106,7 +106,7 @@ func (t *translate) Translate() error {
 	for _, f := range t.files {
 		fmt.Println("Processing file " + f.path)
 		if err := f.save(); err != nil {
-			return nil
+			fmt.Println("file " + f.path + " Error")
 		}
 	}
 	return nil
